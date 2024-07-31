@@ -1,0 +1,21 @@
+simulate:
+  label: Run Simulation
+  icon: "robot-solid.svg"
+resetParams:
+  label: Reset Model
+  icon: "arrow-rotate-left-solid.svg"
+loadParams:
+  label: Load Model
+  icon: "file-import-solid.svg"
+saveParams:
+  label: Save Model
+  icon: "file-arrow-down-solid.svg"
+exportResults:
+  label: Export Results
+  icon: "share-from-square-solid.svg"
+exportFigure:
+  label: Export Figure
+  icon: "camera-solid.svg"
+editConfiguration:
+  label: Settings
+  icon: "gear-solid.svg"

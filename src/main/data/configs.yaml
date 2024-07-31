@@ -1,0 +1,26 @@
+simulation:
+  doOnChange:
+    name: "Simulate On Change"
+    type: checkbox
+    tip: |
+      Mark to run simulations automatically when changes to model parameters or configurations are made.
+    default: False
+directories:
+  updateOnSave:
+    name: "Update directories on Save/Load"
+    type: checkbox
+    tip: |
+      Mark to update default directories automatically based on locations selected for save and load. Effectively, "Use Last Save/Load Directory".
+    default: False
+  saveDir:
+    name: "Default Save Directory"
+    type: folderInput
+    tip: |
+      Select the default directory for exports.
+    default: "/"
+  loadDir:
+    name: "Default Load Directory"
+    type: folderInput
+    tip: |
+      Select the default directory for imports.
+    default: "/"

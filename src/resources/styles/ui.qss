@@ -1,0 +1,191 @@
+/* General styles */
+/* * {
+    font-family: 'Playfair Display';
+} */
+
+#sidebar_label {
+    font-family: 'Playwrite HR';
+}
+
+#sidebar_label {
+    font-size: 16px;
+}
+
+#sidebar_icon {
+    max-width: 35px;
+    max-height: 35px;
+}
+
+QStackedWidget {
+    background-color: #ffffff;
+}
+
+#sidebar_toggle, #param_toggle {
+    border: none;
+}
+
+QFrame#sidebar_frame {
+    border-right: 1px solid #828790;
+    border-left: none;
+    border-bottom: none;
+    border-top: 1px solid #828790;
+}
+
+QFrame#param_frame {
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
+    border-top: 1px solid #828790;
+}
+
+QListWidget,
+#main_gridLayout,
+#param_frame,
+#param_panel_frame,
+#sidebar_frame {
+    background-color: #f0f0f0;
+}
+
+QListWidget#sidebar_iconList,
+QListWidget#sidebar_iconList_expanded {
+    border-left: none;
+    border-top: none;
+    border-right: 1px solid #828790;
+    border-bottom: none;
+    outline: none;
+}
+
+QListWidget#sidebar_iconList::item {
+    border: none;
+    padding: 5px 10px;
+    margin: 0;
+}
+
+QListWidget#sidebar_iconList_expanded::item {
+    border: none;
+    padding: 5px 10px;
+    margin: 4px 0;
+}
+
+#sidebar_iconList::item {
+    padding-top: 0;
+    outline: none;
+}
+
+/* Expanded sidebar item styles */
+QListWidget#sidebar_iconList_expanded {
+    font-size: 16px;
+    outline: none;
+}
+
+/* Add keyframes for fading out */
+@keyframes fadeout {
+    from {
+        background-color: #dadaff;
+    }
+    to {
+        background-color: transparent;
+    }
+}
+
+QListWidget#sidebar_iconList::item:hover, 
+QListWidget#sidebar_iconList_expanded::item:hover, 
+#sidebar_toggle:hover, 
+#param_toggle:hover {
+    background-color: #dadada;
+    outline: none;
+}
+
+QListWidget#sidebar_iconList:selected, 
+QListWidget#sidebar_iconList_expanded:selected {
+    outline: none;
+}
+
+QListWidget#sidebar_iconList::item:selected, 
+QListWidget#sidebar_iconList_expanded::item:selected {
+    background-color: #dadaff;
+    outline: none;
+}
+
+QListWidget#sidebar_iconList::item:focus, 
+QListWidget#sidebar_iconList_expanded::item:focus {
+    outline: none;
+}
+
+/* icon sizes */
+QListWidget#sidebar_iconList::icon {
+    width: 29px;
+    height: 29px;
+    margin: -2px 0;
+    padding-bottom: -5px;
+}
+
+QListWidget#sidebar_iconList_expanded::icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Content Panel (stacked widget) */
+#content_container {
+    border-bottom: none;
+    border-top: 1px solid #828790;
+    border-left: 1px solid #828790;
+    border-right: none;
+}
+
+/* Parameter Contents */
+#collapsibleSection, #param_panel_layout, #param_scroll_area, #param_panel_frame {
+    border: none;
+}
+
+#statusbar {
+    border-top: 1px solid #828790;
+}
+
+#collapsibleHeaderLine.legend {
+    border-bottom: none;
+    border-top: 1px solid #828790;
+    border-left: none;
+    border-right: none;
+}
+
+#collapsibleContentArea.legend {
+    background-color: #ffffff;
+    border: none;
+}
+#collapsibleContentWidget.legend {
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff;
+}
+
+/* Configurations Page */
+#config_top_bar {
+    border-bottom: 1px solid #ccc;
+}
+
+#config_label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#config_contents {
+    background-color: #ffffff;
+}
+
+#LineItem.config {
+    background-color: #ffffff;
+}
+
+/* QSS Stylesheet */
+QWidget[class="config"] {
+    background-color: white;
+}
+
+#collapsibleContentArea[class="config"] {
+    border: none;
+}
+
+QWidget[class="config"] QLabel {
+    background-color: transparent;
+}

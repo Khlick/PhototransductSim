@@ -1,0 +1,159 @@
+modelSetup:
+  cellModel:
+    name: "Cell Model"
+    type: dropdown
+    tip: "Select the default model to base your edits on"
+    default: "None"
+    options: ["None", "Mouse Rod", "Mouse Cone"]
+  maxStep:
+    name: "Solver Step Max."
+    type: numericInput
+    tip: "Set the maximum step size. Set to 'inf' for adaptive step size."
+    default: float('inf')
+    display: ""
+stimulusConfiguration:
+  dt:
+    name: "$\\delta t$ (sec)"
+    type: numericInput
+    tip: "Time interval per sample in seconds"
+    default: 0.001
+    display: ".5g"
+  stimulusOffset:
+    name: "Stimulus Delay (sec)"
+    type: numericInput
+    tip: |
+      Set the pre-stimulus duration. Must be set to the nearest dt interval.
+    default: 0.1
+    display: ".5g"
+  responseDuration:
+    name: "Response Duration (sec)"
+    type: numericInput
+    tip: "Set the total duration for the response simulation"
+    default: 1.6
+    display: ".5g"
+  pigmentActivations:
+    name: "Isoms. ($P^*$)"
+    type: numericArray
+    tip: |
+      Set the stimulus intensities for simulation in total number of pigment isomerizations per stimulus.
+      Multiple values may be entered as valid Python expressions parsing to numeric arrays (numpy as np) or scalar float-type.
+    default: 1.
+    display: ".6g"
+  stimulusDurations:
+    name: "Duration (sec)"
+    type: numericArray
+    tip: |
+      Set the stimulus durations for each stimulus.
+      Multiple values may be entered as valid Python expressions parsing to numeric arrays (numpy as np) or scalar float-type.
+      Enter a scalar to set all stimulations to the same duration.
+    default: 0.01
+    display: ".5g"
+modelParameters:
+  iDark:
+    name: "Dark Current $pA$"
+    type: numericInput
+    tip: "Set the resting dark current, i.e., that maximal response current."
+    default: 15
+    display: ".2f"
+  colArea:
+    name: "$\\kappa$ $\\mu m^2$/photon"
+    type: numericArray
+    tip: "Collecting area"
+    default: 0.28
+    display: ".2f"
+  xi:
+    name: "$\\xi$"
+    type: numericArray
+    tip: "Transduction gain of PDE activation"
+    default: 0.18
+    display: ".5f"
+  betaDark:
+    name: "$\\beta_d$ $s^{-1}$"
+    type: numericArray
+    tip: "Dark turnover rate"
+    default: 4.1
+    display: ".2f"
+  muRa:
+    name: "$\\mu_{rh}$ $s^{-1}$"
+    type: numericArray
+    tip: "Deactivation rate of activated photopigment"
+    default: 28
+    display: ".2f"
+  muPa:
+    name: "$\\mu_{pde}$ $s^{-1}$"
+    type: numericArray
+    tip: "Deactivation rate of activated PDE"
+    default: 5
+    display: ".2f"
+  muTa:
+    name: "$\\mu_{tr}$ $s^{-1}$"
+    type: numericArray
+    tip: "Deactivation rate of activated transducin"
+    default: 23
+    display: ".2f"
+  KEx:
+    name: "$K_{ex}$ $\\mu M$"
+    type: numericArray
+    tip: "Sensitivity of NCX exchanger to Ca2+"
+    default: 1.6
+    display: ".2f"
+  KCh:
+    name: "$K_{ch}$ $\\mu M$"
+    type: numericArray
+    tip: "Sensitivity of CNG channels to cGMP"
+    default: 20
+    display: ".2f"
+  nEx:
+    name: "$n_{ex}$"
+    type: numericArray
+    tip: "Exchanger cooperativity"
+    default: 1
+    display: ".2f"
+  nCh:
+    name: "$n_{ch}$"
+    type: numericArray
+    tip: "CNG channel cooperativity"
+    default: 2.5
+    display: ".2f"
+  KAlpha:
+    name: "$K_{\\alpha}$ $(\\mu M)$"
+    type: numericArray
+    tip: "Cyclase affinity to Ca2+"
+    default: 0.14
+    display: ".2f"
+  rAlpha:
+    name: "$r_{\\alpha}$"
+    type: numericArray
+    tip: "Ratio of minimal to maximal cyclase activity"
+    default: 0.033
+    display: ".4f"
+  nAlpha:
+    name: "$n_{\\alpha}$"
+    type: numericArray
+    tip: "Hill coefficient for the cyclase"
+    default: 2
+    display: ".2f"
+  fChCa:
+    name: "$f_{ch,ca}$"
+    type: numericArray
+    tip: "Fraction of the CNG current carried by Ca2+"
+    default: 0.12
+    display: ".2f"
+  concCaDark:
+    name: "$c_{ca,d}$ $\\mu M$"
+    type: numericArray
+    tip: "Dark Ca2+ concentration"
+    default: 0.3
+    display: ".2f"
+  concCgDark:
+    name: "$c_{cg,d}$ $\\mu M$"
+    type: numericArray
+    tip: "Dark cGMP concentration"
+    default: 4
+    display: ".2f"
+  muCa:
+    name: "$\\mu_{ca}$"
+    type: numericArray
+    tip: "Deactivation rate of activated calcium"
+    default: 50
+    display: ".2f"

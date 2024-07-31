@@ -1,0 +1,58 @@
+{
+    "refreshOnExit": false,
+    "window_geometry": {
+        "x": 1448,
+        "y": 715,
+        "width": 1200,
+        "height": 803
+    },
+    "sidebar_toggle": false,
+    "param_toggle": false,
+    "model_parameters": {
+        "modelSetup": {
+            "cellModel": "None",
+            "maxStep": Infinity
+        },
+        "stimulusConfiguration": {
+            "dt": 0.001,
+            "stimulusOffset": 0.1,
+            "responseDuration": 1.6,
+            "pigmentActivations": 1,
+            "stimulusDurations": 0.01
+        },
+        "modelParameters": {
+            "iDark": 15.0,
+            "colArea": 0.28,
+            "xi": 0.18,
+            "betaDark": 4.1,
+            "muRa": 28.0,
+            "muPa": [
+                5.0,
+                6.0,
+                7.0
+            ],
+            "muTa": 23.0,
+            "KEx": 1.6,
+            "KCh": 20.0,
+            "nEx": 1.0,
+            "nCh": 2.5,
+            "KAlpha": 0.14,
+            "rAlpha": 0.033,
+            "nAlpha": 2.0,
+            "fChCa": 0.62,
+            "concCaDark": 0.3,
+            "concCgDark": 12.0,
+            "muCa": 50.0
+        }
+    },
+    "config_parameters": {
+        "simulation": {
+            "doOnChange": false
+        },
+        "directories": {
+            "updateOnSave": false,
+            "saveDir": "/",
+            "loadDir": "/"
+        }
+    }
+}

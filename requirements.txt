@@ -1,0 +1,11 @@
+appdirs
+matplotlib
+mplcursors
+numpy
+pandas
+pyqt6
+pyyaml
+reportlab
+scipy
+setuptools
+wheel

@@ -1,0 +1,5 @@
+
+site_name: PhototransductSim Documentation
+nav:
+    - Home: index.md
+    - User Guide: user-guide.md

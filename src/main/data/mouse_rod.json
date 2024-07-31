@@ -1,0 +1,20 @@
+{
+    "betaDark": 4.1,
+    "concCaDark": 0.3,
+    "concCgDark": 4,
+    "fChCa": 0.12,
+    "colArea": 0.28,
+    "betaSub": 0.021,
+    "xi":  0.18,
+    "muRa": 28,
+    "muTa": 23,
+    "muPa": 5,
+    "nAlpha": 2,
+    "KAlpha": 0.14,
+    "rAlpha": 0.033,
+    "nCh": 2.5,
+    "KCh": 20,
+    "KEx": 1.6,
+    "muCa": 50,
+    "iDark": 15
+}
