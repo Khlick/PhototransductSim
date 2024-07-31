@@ -1,4 +1,17 @@
-include README.md
 include LICENSE
 include NOTICE.md
-include src/main/data/config.yaml
+include README.md
+include requirements.txt
+include pyproject.toml
+
+recursive-include docs *
+recursive-include src *
+recursive-include resources *
+recursive-include test *
+recursive-include src/main/data *.yaml *.json
+
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.so
+global-exclude *.dylib
+global-exclude *.dll
