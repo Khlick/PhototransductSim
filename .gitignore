@@ -116,3 +116,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# OTHER
+tree.txt
+.dev/
+
+# act/docker
+.secrets
