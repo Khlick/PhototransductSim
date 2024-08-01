@@ -1,25 +1,38 @@
-name: Build and Release
+name: Build and Test
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
 
 jobs:
   build-test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Node.js
+        if: runner.os != 'Windows'
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+        shell: bash
+
+      - name: Install Node.js (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install node
+        shell: bash
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.12.4
+          cache: 'pip'
+          install-dir: ${{ runner.temp }}/python
 
       - name: Install dependencies
         run: |
@@ -31,6 +44,11 @@ jobs:
         run: |
           pip install pyinstaller
           pyinstaller phototransductsim.spec
+
+      - name: Copy files to output directory
+        run: |
+          mkdir -p /mnt/output/dist
+          cp -r dist/* /mnt/output/dist
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
@@ -62,4 +80,3 @@ jobs:
         with:
           name: phototransductsim-ubuntu-latest
           path: dist/linux
-
