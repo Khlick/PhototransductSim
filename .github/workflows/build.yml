@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write  # Grants write access to contents, needed for creating releases
+  actions: read    # Grants read access to actions
+
 jobs:
   setup-release:
     runs-on: ubuntu-latest
@@ -16,7 +20,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref_name }}
@@ -54,7 +58,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         uses: actions/upload-release-asset@v1.0.2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ needs.setup-release.outputs.upload_url }}
           asset_path: ./dist/phototransductsim.dmg
@@ -65,7 +69,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ needs.setup-release.outputs.upload_url }}
           asset_path: ./dist/phototransductsim.exe
@@ -76,7 +80,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
           upload_url: ${{ needs.setup-release.outputs.upload_url }}
           asset_path: ./dist/phototransductsim
