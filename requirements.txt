@@ -5,6 +5,7 @@ numpy
 pandas
 pyqt6
 pyyaml
+pyinstaller
 reportlab
 scipy
 setuptools
