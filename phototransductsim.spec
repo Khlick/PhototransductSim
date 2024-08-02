@@ -48,7 +48,7 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,
-    icon='path/to/icon.ico'  # specify your icon file
+    icon='src/resources/icons/psim.ico'  # specify your icon file
 )
 
 coll = COLLECT(
@@ -77,7 +77,7 @@ if os.name == 'nt':
         upx_exclude=[],
         runtime_tmpdir=None,
         console=False,
-        icon='path/to/icon.ico'  # specify your icon file
+        icon='src/resources/icons/psim.ico'  # specify your icon file
     )
 
     coll = COLLECT(
@@ -94,13 +94,13 @@ if os.name == 'nt':
 elif os.name == 'posix':
     app = BUNDLE(
         coll,
-        name='phototransductsim.app',
-        icon='path/to/icon.icns',  # specify your icon file
-        bundle_identifier='com.example.phototransductsim'
+        name='PhototransductSim.app',
+        icon='src/resources/icons/psim.icns',  # specify your icon file
+        bundle_identifier='com.example.phototransductsim'  # specify your bundle identifier
     )
 
     dmg = DMG(
         app,
-        name='phototransductsim',
+        name='PhototransductSim',
         volume_label='PhototransductSim'
     )
