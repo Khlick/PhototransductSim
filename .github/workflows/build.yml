@@ -48,15 +48,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
-
-      - name: Generate Spec File
-        run: |
-          pyinstaller --name phototransductsim src/main/app/application.py
-
-      - name: Customize Spec File
-        run: |
-          # Add commands to customize the generated spec file
-
+      
       - name: Build with PyInstaller
         run: |
           pip install pyinstaller
