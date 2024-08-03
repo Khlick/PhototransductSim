@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -39,6 +43,7 @@ jobs:
 
   create_installer_windows:
     needs: build
+    if: ${{ matrix.os == 'windows-latest' }}
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -57,13 +62,18 @@ jobs:
           options: /O+
 
       - name: Upload Windows Installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: phototransductsim-windows-installer
-          path: dist/PhototransductSimInstaller.exe
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: dist/PhototransductSimInstaller/PhototransductSimInstaller.exe
+          asset_name: PhototransductSimInstaller.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
 
   create_installer_macos:
     needs: build
+    if: ${{ matrix.os == 'macos-latest' }}
     runs-on: macos-latest
     steps:
       - name: Checkout code
@@ -80,10 +90,14 @@ jobs:
           hdiutil create -volname PhototransductSim -srcfolder dist/phototransductsim -ov -format UDZO dist/phototransductsim.dmg
 
       - name: Upload macOS DMG
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: phototransductsim-macos-installer
-          path: dist/phototransductsim.dmg
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: dist/phototransductsim.dmg
+          asset_name: phototransductsim.dmg
+          asset_content_type: application/x-apple-diskimage
 
   release:
     needs: [create_installer_windows, create_installer_macos]
@@ -96,7 +110,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
@@ -104,32 +118,20 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Download Windows Installer
-        uses: actions/download-artifact@v4
-        with:
-          name: phototransductsim-windows-installer
-          path: dist/PhototransductSimInstaller.exe
-
-      - name: Download macOS DMG
-        uses: actions/download-artifact@v4
-        with:
-          name: phototransductsim-macos-installer
-          path: dist/phototransductsim.dmg
-
       - name: Upload Windows Installer
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/PhototransductSimInstaller.exe
+          asset_path: dist/PhototransductSimInstaller/PhototransductSimInstaller.exe
           asset_name: PhototransductSimInstaller.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
       - name: Upload macOS DMG
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/phototransductsim.dmg
