@@ -112,13 +112,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: phototransductsim-windows-installer
-          path: dist/PhototransductSimInstaller.exe
+          path: dist/
 
       - name: Download macOS DMG
         uses: actions/download-artifact@v4
         with:
           name: phototransductsim-macos-installer
-          path: dist/phototransductsim.dmg
+          path: dist/
 
       - name: Upload Windows Installer
         uses: actions/upload-release-asset@v1
