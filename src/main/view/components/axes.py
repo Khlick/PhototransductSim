@@ -16,7 +16,7 @@ class Axes(QWidget,BaseApp):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.previous_selection = {"x": None, "y": None}
-        self.max_legend_width = 10
+        self.max_legend_width = 6
         self.legend_items = []
         self.setupUi()
         self.bindUi()
@@ -53,7 +53,7 @@ class Axes(QWidget,BaseApp):
 
         # Create the axis selection layout
         axis_layout = QHBoxLayout()
-        axis_layout.setSpacing(5)
+        axis_layout.setSpacing(3)
         axis_layout.setContentsMargins(10, 0, 10, 0)
         
         # Y-Axis selection
@@ -84,7 +84,6 @@ class Axes(QWidget,BaseApp):
 
         # Create the collapsible legend container
         self.legend_container = CollapsibleContainer(title="Legend")
-        # legend_layout = QHBoxLayout()  # Set as horizontal layout
         legend_layout = QGridLayout()
         legend_layout.setContentsMargins(2, 3, 2, 3)  # Add some padding
         legend_layout.setSpacing(2)

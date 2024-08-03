@@ -5,34 +5,12 @@ on:
     tags:
       - 'v*.*.*'
 
-permissions:
-  contents: write  # Grants write access to contents, needed for creating releases
-  actions: read    # Grants read access to actions
-
 jobs:
-  setup-release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-
   build:
-    needs: setup-release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-latest]
 
     steps:
       - name: Checkout code
@@ -41,48 +19,119 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12.4
+          python-version: 3.12
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install poetry
           poetry install
-      
+          pip install pyinstaller zstandard
+
       - name: Build with PyInstaller
         run: |
-          pip install pyinstaller
-          pyinstaller phototransductsim.spec
+          python -m PyInstaller phototransductsim.spec
 
-      - name: Upload macOS Installer
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ needs.setup-release.outputs.upload_url }}
-          asset_path: ./dist/phototransductsim.dmg
-          asset_name: phototransductsim-macos.dmg
-          asset_content_type: application/octet-stream
+          name: phototransductsim-${{ matrix.os }}
+          path: dist/
+
+  create_installer_windows:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: phototransductsim-windows-latest
+          path: dist/
+
+      - name: Compile .ISS to .EXE Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: phototransductsim.iss
+          options: /O+
 
       - name: Upload Windows Installer
-        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phototransductsim-windows-installer
+          path: dist/PhototransductSimInstaller.exe
+
+  create_installer_macos:
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: phototransductsim-macos-latest
+          path: dist/
+
+      - name: Create macOS DMG
+        run: |
+          hdiutil create -volname PhototransductSim -srcfolder dist/phototransductsim -ov -format UDZO dist/phototransductsim.dmg
+
+      - name: Upload macOS DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: phototransductsim-macos-installer
+          path: dist/phototransductsim.dmg
+
+  release:
+    needs: [create_installer_windows, create_installer_macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: Release notes for ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Download Windows Installer
+        uses: actions/download-artifact@v4
+        with:
+          name: phototransductsim-windows-installer
+          path: dist/PhototransductSimInstaller.exe
+
+      - name: Download macOS DMG
+        uses: actions/download-artifact@v4
+        with:
+          name: phototransductsim-macos-installer
+          path: dist/phototransductsim.dmg
+
+      - name: Upload Windows Installer
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
-          upload_url: ${{ needs.setup-release.outputs.upload_url }}
-          asset_path: ./dist/phototransductsim.exe
-          asset_name: phototransductsim-windows-x86_64.exe
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/PhototransductSimInstaller.exe
+          asset_name: PhototransductSimInstaller.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
-      - name: Upload Linux Installer
-        if: matrix.os == 'ubuntu-latest'
+      - name: Upload macOS DMG
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         with:
-          upload_url: ${{ needs.setup-release.outputs.upload_url }}
-          asset_path: ./dist/phototransductsim
-          asset_name: phototransductsim-linux
-          asset_content_type: application/octet-stream
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/phototransductsim.dmg
+          asset_name: phototransductsim.dmg
+          asset_content_type: application/x-apple-diskimage

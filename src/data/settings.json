@@ -4,13 +4,13 @@
         "x": 1448,
         "y": 715,
         "width": 1200,
-        "height": 803
+        "height": 700
     },
     "sidebar_toggle": false,
     "param_toggle": false,
     "model_parameters": {
         "modelSetup": {
-            "cellModel": "Mouse Rod",
+            "cellModel": "None",
             "maxStep": Infinity
         },
         "stimulusConfiguration": {
@@ -19,11 +19,9 @@
             "responseDuration": 1.6,
             "pigmentActivations": [
                 1,
-                2,
-                4
+                10
             ],
             "stimulusDurations": [
-                0.01,
                 0.01,
                 0.01
             ]
@@ -33,18 +31,18 @@
             "colArea": 0.28,
             "xi": 0.18,
             "betaDark": [
-                2.0,
-                4.0,
-                8.0,
-                10.0,
-                20.0
+                4.1,
+                8.2,
+                16.4,
+                32.8,
+                65.6,
+                131.2
             ],
             "muRa": 28.0,
             "muPa": 5.0,
-            "muTa": 23.0,
+            "muTa": 20.0,
             "KEx": 1.6,
             "KCh": 20.0,
-            "nEx": 1.0,
             "nCh": 2.5,
             "KAlpha": 0.14,
             "rAlpha": 0.033,

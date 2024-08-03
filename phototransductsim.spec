@@ -1,39 +1,51 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
-from PyInstaller.utils.hooks import collect_all
+import sys
 
-block_cipher = None
+def recursive_files(path, root= None, exclude_dirs=['__pycache__']):
+    files = []
+    path = os.path.normpath(path)
+    split = os.path.split(path)
+    if root:
+        outputRoot = os.path.join(root,*split[1:])
+    else:
+        outputRoot = os.path.join(*split[1:])
+    for item in os.listdir(path):
+        itemPath = os.path.join(path,item)
+        if os.path.isdir(itemPath):
+            if item not in exclude_dirs:
+                files.extend(recursive_files(itemPath,split[1]))
+                continue
+        # not dir
+        files.append((itemPath,outputRoot))
+    return files
 
-# Collect all data files in the specified directories
-datas = [
-    ('src/main/data/*', 'data'),
-    ('src/resources/fonts/*', 'resources/fonts'),
-    ('src/resources/icons/*', 'resources/icons'),
-    ('src/resources/img/*', 'resources/img'),
-    ('src/resources/styles/*', 'resources/styles')
-]
-
-# Collect all hidden imports
-hiddenimports = []
-for module in ['your_module_1', 'your_module_2']:
-    hiddenimports += collect_all(module)[0]
+datas = []
+datas += recursive_files('src/data/')
+datas += recursive_files('src/resources/')
 
 a = Analysis(
     ['src/main/app/application.py'],
-    pathex=[os.getcwd()],
+    pathex=[],
     binaries=[],
     datas=datas,
-    hiddenimports=hiddenimports,
+    hiddenimports=[],
     hookspath=[],
-    runtime_hooks=[],
+    runtime_hooks=['runtime_hook.py'],
     excludes=[],
+    hooksconfig={
+        "matplotlib": {
+            "backends": "QtAgg",
+        },
+    },
+    noarchive= False,
+    optimize=0,
     win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
+    win_private_assemblies=False
 )
 
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+pyz = PYZ(a.pure, a.zipped_data)
 
 exe = EXE(
     pyz,
@@ -41,14 +53,17 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name='phototransductsim',
-    debug=False,
+    debug=False, # True for dev
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
-    console=False,
-    icon='src/resources/icons/psim.ico'  # specify your icon file
+    console=True, # True for dev
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon='src/resources/icons/psim.ico'
 )
 
 coll = COLLECT(
@@ -62,45 +77,18 @@ coll = COLLECT(
     name='phototransductsim'
 )
 
-# Additional configurations for creating .dmg (macOS) and .exe (Windows) packages
-if os.name == 'nt':
-    exe = EXE(
-        pyz,
-        a.scripts,
-        [],
-        exclude_binaries=True,
-        name='phototransductsim',
-        debug=False,
-        bootloader_ignore_signals=False,
-        strip=False,
-        upx=True,
-        upx_exclude=[],
-        runtime_tmpdir=None,
-        console=False,
-        icon='src/resources/icons/psim.ico'  # specify your icon file
-    )
 
-    coll = COLLECT(
-        exe,
-        a.binaries,
-        a.zipfiles,
-        a.datas,
-        strip=False,
-        upx=True,
-        upx_exclude=[],
-        name='phototransductsim'
-    )
-
-elif os.name == 'posix':
-    app = BUNDLE(
-        coll,
-        name='PhototransductSim.app',
-        icon='src/resources/icons/psim.icns',  # specify your icon file
-        bundle_identifier='com.example.phototransductsim'  # specify your bundle identifier
-    )
-
-    dmg = DMG(
-        app,
-        name='PhototransductSim',
-        volume_label='PhototransductSim'
-    )
+app = BUNDLE(
+    coll,
+    name='phototransductsim.app',
+    icon='src/resources/icons/psim.icns',
+    bundle_identifier='com.khrisgriffis.phototransductsim',
+    info_plist={
+            'CFBundleName': 'PhototransductSim',
+            'CFBundleDisplayName': 'PhototransductSim',
+            'CFBundleVersion': '0.1.0',
+            'CFBundleShortVersionString': '0.1.0',
+            'CFBundleIdentifier': 'com.example.phototransductsim',
+            'LSUIElement': True,
+        }
+)

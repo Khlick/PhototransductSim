@@ -2,6 +2,7 @@ import os
 import json
 import yaml
 import csv
+import numpy as np
 from PyQt6.QtCore import QObject, QCoreApplication, Qt, QThread, QTimer, pyqtSlot, QUrl
 from PyQt6.QtGui import QIcon, QDesktopServices
 from PyQt6.QtWidgets import QMessageBox
@@ -13,8 +14,8 @@ from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle
 
 from src.main.app.baseapp import BaseApp
-from src.main.utils import StateBuffer, camel_to_title
-from src.main.model import SimulationWorker
+from src.main.utils import StateBuffer, NumpyEncoder, camel_to_title
+from src.main.model.simulationworker import SimulationWorker
 
 class Controller(QObject, BaseApp):
     MAX_UNDO = 20
@@ -153,17 +154,17 @@ class Controller(QObject, BaseApp):
             "model_parameters": self.view.get_model_parameters(),
             "config_parameters": self.view.get_config_parameters()
         }
-        settings_path = self.getData("settings.json")
+        settings_path = self.setUserData("settings.json","cfg")
         try:
             with open(settings_path, "w") as file:
-                json.dump(settings, file, indent=4)
+                json.dump(settings, file, indent=4, cls=NumpyEncoder)
         except Exception as e:
             QMessageBox.critical(self.view, "Error Saving Settings", f"Error saving settings: {e}")
     
     def load_settings(self):
         # Notes:
         #  when loading base model for reset, make sure to update the resetParam sidebar
-        settings_path = self.getData("settings.json")
+        settings_path = self.getUserData("cfg","settings.json")
         if os.path.exists(settings_path):
             try:
                 with open(settings_path, "r") as file:
@@ -261,9 +262,29 @@ class Controller(QObject, BaseApp):
         c.setFont("Helvetica", 10)
         
         # Prepare data for table
-        table_data = [["Parameter", "Value"]]
-        for key, value in data.items():
-            table_data.append([key, str(value)])
+        def format_value(value):
+            if isinstance(value, (list, np.ndarray, tuple)):
+                # Format each element in the array
+                formatted_elements = [format_number(element) for element in np.atleast_1d(value)]
+                return ", ".join(formatted_elements)
+            else:
+                return format_number(value)
+
+        def format_number(value):
+            try:
+                # Format the number to 4 decimal places and remove trailing zeros
+                return "{:.4f}".format(float(value)).rstrip('0').rstrip('.')
+            except (TypeError, ValueError):
+                # If the value cannot be converted to a float, return it as a string
+                return str(value)
+
+        def prepare_table_data(data):
+            table_data = [["Parameter", "Value"]]
+            for key, value in data.items():
+                table_data.append([key, format_value(value)])
+            return table_data
+        
+        table_data = prepare_table_data(data)
         
         # Create table
         table = Table(table_data, colWidths=[3 * inch, 3 * inch])
@@ -377,6 +398,7 @@ class Controller(QObject, BaseApp):
                     self.model.setParam(**{param:value})
                 except Exception as e:
                     QMessageBox.information(self.view, "Skipping Parameter", f"Skipping {param} for reason: {e}")
+            self.view.setStatus("Parameters imported successfully!")
                     
     def load_parameters(self):
         # allows user defined parameters json
@@ -399,7 +421,8 @@ class Controller(QObject, BaseApp):
         if save_path:
             params = self.model.getParameters()
             with open(save_path, 'w') as json_file:
-                json.dump(params["modelParameters"], json_file, indent=4)
+                json.dump(params["modelParameters"], json_file, indent=4, cls=NumpyEncoder)
+                self.view.setStatus("Parameters exported successfully!")
             if self.view.getConfig("directories","updateOnSave"):
                 self.view.setConfig("directories","saveDir",os.path.dirname(save_path))
 

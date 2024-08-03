@@ -1,6 +1,6 @@
 from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
-    QWidget, QLabel, QLineEdit, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QPushButton, QFileDialog
+    QWidget, QLabel, QLineEdit, QComboBox, QHBoxLayout, QSizePolicy, QCheckBox, QPushButton, QFileDialog, QMessageBox
 )
 from PyQt6.QtGui import QDoubleValidator, QPixmap
 from matplotlib import pyplot as plt
@@ -84,7 +84,19 @@ class LineItem(QWidget):
     @pyqtSlot()
     def emit_value_changed(self):
         old_value = self.old_value
-        new_value = self.getValue()
+        try:
+            new_value = self.getValue()
+        except Exception as e:
+            # Handle the error by setting the old value back
+            self.setValue(old_value)
+            # Show a message box with the error
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Value Change Error")
+            msg.setText(f"An error occurred while changing the value: {e}")
+            msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            msg.exec()
+            return
 
         if self.input_type == "numericInput":
             old_value = float(old_value) if old_value else 0.0

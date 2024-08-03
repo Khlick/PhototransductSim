@@ -103,12 +103,6 @@ modelParameters:
     tip: "Sensitivity of CNG channels to cGMP"
     default: 20
     display: ".2f"
-  nEx:
-    name: "$n_{ex}$"
-    type: numericArray
-    tip: "Exchanger cooperativity"
-    default: 1
-    display: ".2f"
   nCh:
     name: "$n_{ch}$"
     type: numericArray

@@ -179,9 +179,10 @@ class Phototransduction:
 
     def setParam(self, **kwargs):
         for key, value in kwargs.items():
+            new_value = np.atleast_1d(value)
             if key in self.param:
-                if np.ndim(value) > 0:
-                    self.param[key] = np.atleast_1d(value)
+                if len(new_value) > 1:
+                    self.param[key] = new_value
                     self.__truncate_params(exclude=key)
                 else:
                     self.param[key] = value
@@ -464,8 +465,9 @@ class Phototransduction:
     
     def __truncate_params(self,exclude=None):
         for key, value in self.param.items():
-            if key != exclude and np.ndim(value) > 0:
-                self.param[key] = np.atleast_1d(value)[0]
+            new_value = np.atleast_1d(value)
+            if key != exclude and len(new_value) > 1:
+                self.param[key] = new_value[0]
     
     def __generate_parameters(self):
         return {key: np.copy(value) for key, value in self.param.items()}
