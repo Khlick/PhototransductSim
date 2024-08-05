@@ -10,7 +10,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 appdirs = "^1.4.4"
 matplotlib = "^3.9.1"
 mplcursors = "^0.5.3"
