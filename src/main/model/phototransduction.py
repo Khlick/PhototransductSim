@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+from scipy.optimize import fsolve
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import warnings
 
@@ -17,7 +18,7 @@ class Phototransduction:
     
     def __init__(self, dt=0.001, responseDuration=1.5, stimulusOffset=0.1, darkCurrent=15):
         self._dt = dt
-        self.stimulusOffset = stimulusOffset
+        self._stimulusOffset = max(stimulusOffset,dt) # must be at least dt
         self._responseDuration = responseDuration
         self._fs = 1 / dt
         self._maxStep = np.inf
@@ -49,6 +50,15 @@ class Phototransduction:
 
         self._results = None
 
+    @property
+    def stimulusOffset(self):
+        return self._stimulusOffset
+    
+    @stimulusOffset.setter
+    def stimulusOffset(self,value):
+        # Offset must be at least dt
+        self._stimulusOffset = max(self.dt, np.abs(value))
+    
     @property
     def time(self):
         return np.arange(-self.stimulusOffset, self._responseDuration - self.stimulusOffset, self._dt)
@@ -236,7 +246,8 @@ class Phototransduction:
         time = self.time
         lightStimulus = self.light_stimulus(stimulusIntensity, stimulusTime)
 
-        init_values = np.zeros(5)
+        # init_values = np.zeros(5)
+        init_values = self.calculate_steady_state(param)
         attempt = 0
         max_step = self.maxStep # np.inf  # Initial max step size
 
@@ -247,9 +258,9 @@ class Phototransduction:
                     warnings.simplefilter("always", RuntimeWarning)
                     solution = solve_ivp(
                         lambda t, y: self.diff_eq(t, y, lightStimulus, param),
-                        [time[0], time[-1]],
+                        [-self.dt, time[-1]],
                         init_values,
-                        t_eval=time,
+                        t_eval=time[time >= -self.dt],
                         method='RK45',  # Use RK45 solver
                         vectorized=True,
                         rtol=1e-6,       # Relative tolerance
@@ -268,7 +279,14 @@ class Phototransduction:
         if attempt == self.MAX_SOLVE_ATTEMPTS:
             warnings.warn("Simulation completed with warnings due to repeated overflow warnings.", SimulationWarning)
 
+        # Get the solutions (transpose for convenience)
         sol = solution.y.T
+        
+        # Assess pre-stimulus time as steady state
+        pre_stimulus_length = len(time[time < -self.dt])
+        pre_stimulus_values = np.tile(init_values,(pre_stimulus_length,1))
+        
+        sol = np.vstack((pre_stimulus_values,sol))
 
         cG = np.exp(-sol[:, 3])
         ca = np.exp(-sol[:, 4])
@@ -341,7 +359,7 @@ class Phototransduction:
                             key:np.copy(value) for key,value in params.items()
                             } # copy the parameters
                         param_set[sweep_key] = np.asarray(sweep_param[sweep_key][i])
-                        label = f"{activation} (R*); {param_set[sweep_key]} ({sweep_key})"
+                        label = f"{activation} (R*); {param_set[sweep_key]:.5g} ({sweep_key})"
                         futures.append(
                             (
                                 executor.submit(
@@ -419,6 +437,46 @@ class Phototransduction:
             "data": data
         }
 
+    
+    def steady_state_equations(self,u, param=None):
+        if param is None:
+            param = self.__generate_parameters()
+        betaDark = param['betaDark']
+        muRa = param['muRa']
+        muTa = param['muTa']
+        muPa = param['muPa']
+        xi = param['xi']
+        nAlpha = param['nAlpha']
+        rAlpha = param['rAlpha']
+        KAlpha = param['KAlpha'] / param['concCaDark']
+        
+        nCh = param['nCh']
+        KEx = param['KEx'] / param['concCaDark']
+        KCh = param['KCh'] / param['concCgDark']
+        muCa = param['muCa']
+        colArea = param['colArea']
+        
+        # Assuming u = [u0, u1, u2, u3, u4]
+        ca = np.exp(-u[4])
+        alpha = (1 + KAlpha**nAlpha) / (rAlpha + KAlpha**nAlpha) * (rAlpha * ca**nAlpha + KAlpha**nAlpha) / (ca**nAlpha + KAlpha**nAlpha)
+
+        dudt = np.zeros_like(u)
+        dudt[0] = muRa * (colArea * xi * 0 - u[0])  # Assuming no stimulus
+        dudt[1] = muTa * (u[0] - u[1])
+        dudt[2] = muPa * (u[1] - u[2])
+        dudt[3] = u[2] - betaDark * (np.exp(u[3]) * alpha - 1)
+        dudt[4] = muCa * (
+            (1 + KEx) / (ca + KEx) * ca - (1 + KCh**nCh) / (np.exp(-nCh * u[3]) + KCh**nCh) * np.exp(-nCh * u[3])
+        ) * np.exp(u[4])
+        
+        return dudt
+
+    def calculate_steady_state(self,param=None):
+        if param is None:
+            param = self.__generate_parameters()
+        initial_guess = np.zeros(5)
+        steady_state_values = fsolve(self.steady_state_equations, initial_guess, args=(param,))
+        return steady_state_values
     
     def getParameters(self):
         return {

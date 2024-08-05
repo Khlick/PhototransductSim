@@ -87,7 +87,7 @@ app = BUNDLE(
             'CFBundleName': 'PhototransductSim',
             'CFBundleDisplayName': 'PhototransductSim',
             'CFBundleVersion': '0.1.0',
-            'CFBundleShortVersionString': '0.1.0',
+            'CFBundleShortVersionString': '0.1.2',
             'CFBundleIdentifier': 'com.example.phototransductsim',
             'LSUIElement': True,
         }

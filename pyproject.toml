@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "PhototransductSim"
-version = "0.1.0"
+version = "0.1.2"
 description = "A comprehensive application for simulating and visualizing rod photoreceptor signaling."
 authors = ["Khris Griffis, Ph.D. <khris.griffis.phd@gmail.com>"]
 license = "MIT"

@@ -1,14 +1,14 @@
 # src/main/app/splash.py
 
 import yaml
-from PyQt6.QtCore import Qt, QTimer, QElapsedTimer
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
 from PyQt6.QtGui import QPixmap, QFontDatabase
 
 from .baseapp import BaseApp
 
 class PhototransducSimSplash(QWidget, BaseApp):
-    def __init__(self, image_name, label, byline="", timeout=5000):
+    def __init__(self, image_name, label, byline=""):
         super().__init__()
 
         with open(self.getData('aes.yaml'), 'r') as file:
@@ -61,12 +61,6 @@ class PhototransducSimSplash(QWidget, BaseApp):
         text_container_layout.addWidget(self.text_byline)
 
         layout.addWidget(text_container, alignment=Qt.AlignmentFlag.AlignCenter)
-
-        self.timer = QTimer(self)
-        self.timer.setInterval(timeout)
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.close)
-        self.timer.start()
 
     def update_text(self, text):
         self.text_byline.setText(text)
