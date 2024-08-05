@@ -1,6 +1,8 @@
+#define AppVersion "0.1.2"
+
 [Setup]
 AppName=PhototransductSim
-AppVersion=0.1.0
+AppVersion={#AppVersion}
 DefaultDirName={commonpf64}\PhototransductSim
 DefaultGroupName=PhototransductSim
 OutputDir=dist
