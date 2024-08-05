@@ -1,10 +1,11 @@
 [Setup]
 AppName=PhototransductSim
 AppVersion=0.1.0
-DefaultDirName={pf}\PhototransductSim
+DefaultDirName={commonpf64}\PhototransductSim
 DefaultGroupName=PhototransductSim
 OutputDir=dist
 OutputBaseFilename=PhototransductSimInstaller
+ArchitecturesInstallIn64BitMode=x64
 Compression=lzma
 SolidCompression=yes
 
